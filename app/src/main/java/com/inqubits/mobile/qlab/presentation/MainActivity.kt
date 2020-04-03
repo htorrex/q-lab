@@ -11,7 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        navigateToFragment(MoviesFragment.newInstance(Bundle()))
+        navigateToFragment(MovieFragment.newInstance(Bundle()))
     }
 
     private fun navigateToFragment(fragment: Fragment) {
