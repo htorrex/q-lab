@@ -52,7 +52,7 @@ class MovieFragment : Fragment() {
         }
 
         // Positive response
-        movieViewModel.resultData.observe(viewLifecycleOwner, Observer { movies ->
+        movieViewModel.movieLiveData.observe(viewLifecycleOwner, Observer { movies ->
             movieAdapter.setData(movies)
         })
 
