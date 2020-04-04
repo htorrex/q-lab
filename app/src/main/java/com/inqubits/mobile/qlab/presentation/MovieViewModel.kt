@@ -1,46 +1,30 @@
 package com.inqubits.mobile.qlab.presentation
 
-import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.inqubits.mobile.qlab.domain.Failure
 import com.inqubits.mobile.qlab.domain.MovieManager
 import com.inqubits.mobile.qlab.domain.Success
 import com.inqubits.mobile.qlab.model.Movie
+import kotlinx.coroutines.launch
 
 class MovieViewModel(val movieManagerImpl: MovieManager) : ViewModel() {
 
-    // request from the UI
-    private val requestData = MutableLiveData<String>()
+    private val resultLiveData = MutableLiveData<List<Movie>>() // result from the request
 
-    // Observe Live Data and process positive event.
-    var resultData = MediatorLiveData<List<Movie>>()
+    val movieLiveData: LiveData<List<Movie>>  // Observe immutable Live Data positive event.
+        get() = resultLiveData
 
-    // Observe Live Data and process error event.
-    var errorAlert = MutableLiveData<String>()
-
-    init {
-        setupMovieLiveData()
-    }
+    var errorAlert = MutableLiveData<String>()  // Observe Live Data for error event.
 
     // public method to be invoke from the UI
     fun findMovieByTitle(title: String) {
-        requestData.value = title
-    }
-
-    private fun setupMovieLiveData() {
-        val response = Transformations.switchMap(requestData) {
-            liveData {
-                emit(movieManagerImpl.getMovieByTitle(it))
-            }
-        }
-
-        resultData.addSource(response) {
-            when (it) {
-                is Success -> resultData.value = it.value
-                is Failure -> {
-                    Log.d("MOVIE", "Something wrong: ${it.error.message}")
-                    errorAlert.value = "No Data found!"
-                }
+        viewModelScope.launch {
+            when (val result = movieManagerImpl.getMovieByTitle(title)) {
+                is Success -> resultLiveData.value = result.value
+                is Failure -> errorAlert.value = "No Data found!"
             }
         }
     }
