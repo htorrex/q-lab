@@ -10,7 +10,7 @@ import com.inqubits.mobile.qlab.domain.Success
 import com.inqubits.mobile.qlab.model.Movie
 import kotlinx.coroutines.launch
 
-class MovieViewModel(val movieManagerImpl: MovieManager) : ViewModel() {
+class MovieViewModel(private val movieManagerImpl: MovieManager) : ViewModel() {
 
     private val resultLiveData = MutableLiveData<List<Movie>>() // result from the request
 
